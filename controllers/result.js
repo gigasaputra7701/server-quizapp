@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Result = require("../models/result");
 
 const postResult = async (req, res) => {
@@ -20,7 +21,7 @@ const postResult = async (req, res) => {
   }
 };
 
-const getResult = async (req, res) => {
+const getAllResult = async (req, res) => {
   try {
     const data = await Result.find()
       .populate({
@@ -42,12 +43,43 @@ const getResult = async (req, res) => {
 
     return res.status(500).json({
       result: false,
-      message: "Failed to fetch results. Please try again later.",
+      message: "Failed to fetch results",
+    });
+  }
+};
+
+const getResult = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await Result.findOne({ user_id: id });
+
+    if (result) {
+      return res.status(200).json({
+        result: true,
+        resultTest: {
+          user_id: result.user_id._id,
+          score: result.score,
+        },
+        message: "Result fetched successfully.",
+      });
+    } else {
+      return res.status(404).json({
+        result: false,
+        message: "No result found for the given user ID.",
+      });
+    }
+  } catch (error) {
+    console.log("Error fetching results:", error);
+
+    return res.status(500).json({
+      result: false,
+      message: "Failed to fetch results",
     });
   }
 };
 
 module.exports = {
   postResult,
+  getAllResult,
   getResult,
 };

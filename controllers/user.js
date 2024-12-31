@@ -19,7 +19,11 @@ const postRegister = wrapAsync(async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const user = new User({ email, username, password: hashedPassword });
+  const user = new User({
+    email,
+    username,
+    password: hashedPassword,
+  });
   await user.save();
 
   return res.json({
@@ -82,6 +86,7 @@ const getMe = wrapAsync(async (req, res) => {
         email: user.email,
         username: user.username,
         role: user.role,
+        test_attempt: user.test_attempt,
       },
     });
   } catch (e) {
@@ -95,10 +100,16 @@ const getMe = wrapAsync(async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find(); // Fetch all users
+    const formattedUsers = users.map((user) => ({
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      test_attempt: user.test_attempt,
+    }));
 
     return res.status(200).json({
       result: true,
-      users: users,
+      users: formattedUsers,
       message: "Users fetched successfully.",
     });
   } catch (error) {
