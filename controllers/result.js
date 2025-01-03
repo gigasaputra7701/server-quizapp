@@ -1,10 +1,19 @@
 const mongoose = require("mongoose");
 const Result = require("../models/result");
+const User = require("../models/user");
 
 const postResult = async (req, res) => {
   const { user_id, test_id, score, answers, completed_at } = req.body;
 
   try {
+    const user = await User.findById(user_id);
+
+    if (user) {
+      user.test_attempt = 0;
+      await user.save();
+    } else {
+      return res.status(404).json({ message: "User tidak ditemukan!" });
+    }
     const newResult = new Result({
       user_id,
       test_id,
