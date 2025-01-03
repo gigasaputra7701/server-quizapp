@@ -104,6 +104,8 @@ const getAllUsers = async (req, res) => {
       _id: user._id,
       email: user.email,
       username: user.username,
+      role: user.role,
+      created_at: user.created_at,
       test_attempt: user.test_attempt,
     }));
 
